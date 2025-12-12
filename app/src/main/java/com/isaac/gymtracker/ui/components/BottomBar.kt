@@ -19,8 +19,8 @@ fun AppBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = navBackStackEntry?.destination?.route
 
-    // Lista de items de navegación con sus íconos
-    val items = listOf(Rutas.Registro, Rutas.Historial, Rutas.IMC)
+    // ⭐️ CORRECCIÓN 1: AÑADIR RUTAS.CHATBOT A LA LISTA
+    val items = listOf(Rutas.Registro, Rutas.Historial, Rutas.IMC, Rutas.Chatbot)
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
@@ -47,13 +47,17 @@ fun AppBottomBar(navController: NavController) {
                     }
                 },
                 icon = {
+
                     when (screen) {
                         is Rutas.Registro -> Icon(Icons.Filled.AddCircle, contentDescription = "Registro")
                         is Rutas.Historial -> Icon(Icons.Filled.List, contentDescription = "Historial")
                         is Rutas.IMC -> Icon(Icons.Filled.FitnessCenter, contentDescription = "IMC")
+                        is Rutas.Chatbot -> Icon(Icons.Filled.ChatBubble, contentDescription = "Chatbot") // Usamos ChatBubble
+
                         else -> {}
                     }
                 },
+                // ⭐️ CORRECCIÓN 3: La etiqueta usa la capitalización de la ruta, lo cual está bien.
                 label = { Text(screen.ruta.capitalize()) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.Black,
@@ -65,6 +69,7 @@ fun AppBottomBar(navController: NavController) {
         }
     }
 }
+
 // Función de extensión simple para capitalizar la primera letra
 fun String.capitalize(): String {
     return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }

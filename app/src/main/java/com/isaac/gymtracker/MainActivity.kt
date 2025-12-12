@@ -6,34 +6,34 @@ import androidx.activity.compose.setContent
 import com.isaac.gymtracker.navigation.AppNavigation
 import com.isaac.gymtracker.ui.theme.GYMTRACKERTheme
 import com.isaac.gymtracker.viewmodel.TrainingViewModelFactory
+// ⭐️ NUEVOS IMPORTS
+import com.isaac.gymtracker.viewmodel.ChatViewModelFactory
+import com.isaac.gymtracker.data.repository.GeminiRepositoryImpl
 
-/**
- * Actividad principal y punto de entrada de la interfaz de usuario de la aplicación.
- *
- * Se encarga de configurar Jetpack Compose, inicializar el `ViewModel` a través de su
- * `Factory` y establecer la navegación principal de la aplicación.
- */
 class MainActivity : ComponentActivity() {
-    /**
-     * Se llama cuando la actividad es creada por primera vez.
-     *
-     * Aquí se configura el contenido de la UI, se obtiene el repositorio desde la
-     * clase `Application` y se crea el `TrainingViewModelFactory` para inyectarlo
-     * en los ViewModels correspondientes.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Se obtiene la instancia de GymApplication para acceder a las dependencias.
             val application = application as GymApplication
 
-            // Se crea el Factory que proveerá el Repositorio a los ViewModels.
-            val viewModelFactory = TrainingViewModelFactory(application.repository)
+            // Repositorio de Entrenamiento (Existente)
+            val trainingRepository = application.repository
+
+            // ⭐️ 1. Repositorio de Gemini (Instanciado)
+            val geminiRepository = GeminiRepositoryImpl()
+
+            // Factory de Entrenamiento (Existente)
+            val trainingViewModelFactory = TrainingViewModelFactory(trainingRepository)
+
+            // ⭐️ 2. Factory de Chat (¡Creado con el repositorio del Chat!)
+            val chatViewModelFactory = ChatViewModelFactory(geminiRepository)
 
             GYMTRACKERTheme {
-                // Se inicializa la navegación de la aplicación, pasando el factory
-                // para que los composables puedan obtener los ViewModels.
-                AppNavigation(factory = viewModelFactory)
+                // ⭐️ 3. Pasar AMBOS factories a AppNavigation
+                AppNavigation(
+                    trainingFactory = trainingViewModelFactory,
+                    chatFactory = chatViewModelFactory
+                )
             }
         }
     }

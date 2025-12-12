@@ -7,16 +7,24 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+// ⭐️ IMPORTS NECESARIOS
 import com.isaac.gymtracker.ui.screens.HistorialScreen
 import com.isaac.gymtracker.ui.screens.RegistroScreen
-import com.isaac.gymtracker.viewmodel.TrainingViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel // Importante
 import com.isaac.gymtracker.ui.components.AppBottomBar
-import com.isaac.gymtracker.ui.screens.IMCScreen
+import com.isaac.gymtracker.ui.theme.screens.ChatScreen
+import com.isaac.gymtracker.ui.theme.screens.IMCScreen
 import com.isaac.gymtracker.viewmodel.EntrenamientoViewModel
+import com.isaac.gymtracker.viewmodel.TrainingViewModelFactory
+import com.isaac.gymtracker.viewmodel.ChatViewModelFactory // ⭐️ NUEVO IMPORT
 
 @Composable
-fun AppNavigation(factory: TrainingViewModelFactory) {
+fun AppNavigation(
+
+    trainingFactory: TrainingViewModelFactory,
+    chatFactory: ChatViewModelFactory
+) {
 
     val navController = rememberNavController()
 
@@ -27,30 +35,36 @@ fun AppNavigation(factory: TrainingViewModelFactory) {
         NavHost(
             navController = navController,
             startDestination = Rutas.Registro.ruta,
-            // ⭐️ CORRECCIÓN 1: Aplicamos el padding para evitar que la barra inferior cubra el contenido
             modifier = Modifier.padding(paddingValues)
         ) {
 
             // 1. PANTALLA DE REGISTRO
             composable(Rutas.Registro.ruta) {
-                val viewModel = viewModel<EntrenamientoViewModel>(factory = factory)
+                // ⭐️ Usamos el trainingFactory
+                val viewModel = viewModel<EntrenamientoViewModel>(factory = trainingFactory)
                 RegistroScreen(
-                    viewModel = viewModel // ⭐️ CORRECCIÓN 2: Eliminamos el navController
+                    viewModel = viewModel
                 )
             }
 
             // 2. PANTALLA DE HISTORIAL
             composable(Rutas.Historial.ruta) {
-                val viewModel = viewModel<EntrenamientoViewModel>(factory = factory)
+                // ⭐️ Usamos el trainingFactory
+                val viewModel = viewModel<EntrenamientoViewModel>(factory = trainingFactory)
                 HistorialScreen(
-                    viewModel = viewModel // ⭐️ CORRECCIÓN 2: Eliminamos el navController
+                    viewModel = viewModel
                 )
             }
 
             // 3. PANTALLA DE IMC
             composable(Rutas.IMC.ruta) {
-                // Dejamos el navController aquí solo si la pantalla IMC lo necesita para navegar internamente
                 IMCScreen(navController = navController)
+            }
+
+            // ⭐️ 4. PANTALLA DE CHATBOT
+            composable(Rutas.Chatbot.ruta) {
+                // ⭐️ CORRECCIÓN CLAVE 2: Usamos el factory del chat
+                ChatScreen(factory = chatFactory)
             }
         }
     }
